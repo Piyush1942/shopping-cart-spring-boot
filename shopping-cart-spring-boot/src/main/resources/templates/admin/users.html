@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Users</title>
+</head>
+
+<body>
+<section>
+    <div class="container-fluid mt-5 p-5">
+
+        <div class="card card-sh">
+            <div class="card-header text-center">
+
+                <!-- Page Title -->
+                <p class="fs-4" th:if="${userType == 'USER'}">Users</p>
+                <p class="fs-4" th:if="${userType == 'ADMIN'}">Admins</p>
+
+                <!-- Success Message -->
+                <th:block th:if="${session.succMsg}">
+                    <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                </th:block>
+
+                <!-- Error Message -->
+                <th:block th:if="${session.errorMsg}">
+                    <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                </th:block>
+
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered table-hover text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Profile</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile No</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- When users exist -->
+                        <tr th:each="u, c : ${users}">
+                            <td>[[${c.count}]]</td>
+
+                            <td>
+                                <img th:src="@{'/img/profile_img/' + ${u.profileImage}}"
+                                     width="60" height="60"
+                                     class="rounded-circle">
+                            </td>
+
+                            <td>[[${u.name}]]</td>
+                            <td>[[${u.email}]]</td>
+                            <td>[[${u.mobileNumber}]]</td>
+
+                            <td>
+                                [[${u.address}]], [[${u.city}]],
+                                [[${u.state}]] - [[${u.pincode}]]
+                            </td>
+
+                            <td>
+                                <span th:text="${u.isEnable ? 'Active' : 'Inactive'}"
+                                      th:classappend="${u.isEnable ? 'text-success' : 'text-danger'}">
+                                </span>
+                            </td>
+
+                            <td>
+                                <a th:href="@{'/admin/updateSts?status=true&id=' + ${u.id} + '&type=' + ${userType}}"
+                                   class="btn btn-sm btn-success">
+                                    Activate
+                                </a>
+
+                                <a th:href="@{'/admin/updateSts?status=false&id=' + ${u.id} + '&type=' + ${userType}}"
+                                   class="btn btn-sm btn-danger">
+                                    Deactivate
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- When no users found -->
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="8" class="text-danger fw-bold">
+                                No users found
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>

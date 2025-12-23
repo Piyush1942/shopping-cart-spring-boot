@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Category</title>
+</head>
+
+<body>
+<section>
+
+    <div class="container-fluid p-5 mt-5">
+        <div class="row">
+
+            <!-- ================= ADD CATEGORY ================= -->
+            <div class="col-md-3">
+                <div class="card card-sh">
+                    <div class="card-header text-center">
+                        <p class="fs-4">Add Category</p>
+
+                        <!-- Success Message -->
+                        <th:block th:if="${session.succMsg}">
+                            <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                            <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                        </th:block>
+
+                        <!-- Error Message -->
+                        <th:block th:if="${session.errorMsg}">
+                            <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                            <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                        </th:block>
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/saveCategory}"
+                              method="post"
+                              enctype="multipart/form-data">
+
+                            <div class="mb-3">
+                                <label>Enter Category</label>
+                                <input type="text"
+                                       name="name"
+                                       class="form-control"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Status</label>
+
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="isActive"
+                                           value="true"
+                                           checked>
+                                    <label class="form-check-label">Active</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="isActive"
+                                           value="false">
+                                    <label class="form-check-label">Inactive</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Upload Image</label>
+                                <input type="file"
+                                       name="file"
+                                       class="form-control">
+                            </div>
+
+                            <button class="btn btn-primary col-md-12 mt-2">
+                                Save
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CATEGORY LIST ================= -->
+            <div class="col-md-8">
+                <div class="card card-sh">
+                    <div class="card-header text-center fs-4">
+                        Category Details
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Image</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="cat, stat : ${categorys}">
+                                <td>[[${stat.index + 1}]]</td>
+                                <td>[[${cat.name}]]</td>
+                                <td>[[${cat.isActive}]]</td>
+
+                                <td>
+                                    <img th:src="@{/img/category_img/{img}(img=${cat.imageName})}"
+                                         width="50"
+                                         height="50">
+                                </td>
+
+                                <td>
+                                    <a th:href="@{'/admin/loadEditCategory/' + ${cat.id}}"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+
+                                    <a th:href="@{'/admin/deleteCategory/' + ${cat.id}}"
+                                       class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- ================= PAGINATION ================= -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                Total Category : [[${totalElements}]]
+                            </div>
+
+                            <div class="col-md-6">
+                                <nav>
+                                    <ul class="pagination">
+
+                                        <li class="page-item"
+                                            th:classappend="${isFirst} ? 'disabled' : ''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo=' + ${pageNo - 1}}">
+                                                &laquo;
+                                            </a>
+                                        </li>
+
+                                        <li class="page-item"
+                                            th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                            th:classappend="${pageNo + 1 == i} ? 'active' : ''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo=' + ${i - 1}}">
+                                                [[${i}]]
+                                            </a>
+                                        </li>
+
+                                        <li class="page-item"
+                                            th:classappend="${isLast} ? 'disabled' : ''">
+                                            <a class="page-link"
+                                               th:href="@{'/admin/category?pageNo=' + ${pageNo + 1}}">
+                                                &raquo;
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <!-- ================= END PAGINATION ================= -->
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
